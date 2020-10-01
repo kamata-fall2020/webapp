@@ -18,6 +18,7 @@ jobs:
       with:
         java-version: 1.8
     - name: Compile code
+      run: mvn install
       run: mvn compile
 
   test:
