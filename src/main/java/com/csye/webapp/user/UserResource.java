@@ -60,6 +60,9 @@ public class UserResource {
                 if (a.getUsername().equals(user.getUsername()))
                 throw new UserNotFoundException("User already exists");
             }
+        if(user.getPassword().length()<5){
+            throw new UserNotFoundException("Password length should be more 5 ");
+        }
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         String encoded_password = encoder.encode(user.getPassword());
         user.setPassword(encoded_password);
