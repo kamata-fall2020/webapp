@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:aditya" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:upstream" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="fd8c1416-e1aa-4f0f-b7ff-6d9ca5d223f4" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HELP.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvnw" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvnw.cmd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/csye/webapp/user/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/csye/webapp/user/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/csye/webapp/user/UserResource.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/csye/webapp/user/UserResource.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/csye/webapp/WebappApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/csye/webapp/WebappApplicationTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.properties" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHome" value="$APPLICATION_HOME_DIR$/plugins/maven/lib/maven3" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectId" id="1iZLWxAZSxvqZe0ZF91BkPA6VF7" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RequestMappingsPanelOrder0" value="0" />
+    <property name="RequestMappingsPanelOrder1" value="1" />
+    <property name="RequestMappingsPanelWidth0" value="75" />
+    <property name="RequestMappingsPanelWidth1" value="75" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="project.structure.last.edited" value="SDKs" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.2" />
+  </component>
+  <component name="RunManager">
+    <configuration name="Unnamed" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="webapp" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.csye.webapp.WebappApplication" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="fd8c1416-e1aa-4f0f-b7ff-6d9ca5d223f4" name="Default Changelist" comment="" />
+      <created>1602110204017</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1602110204017</updated>
+      <workItem from="1602110206927" duration="2312000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="2131" y="858" width="1084" height="736" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1602110598001">
+      <screen x="1680" y="648" width="1920" height="1080" />
+    </state>
+    <state x="2131" y="858" width="1084" height="736" key="#com.intellij.execution.impl.EditConfigurationsDialog/1680.648.1920.1080/0.675.1680.375@1680.648.1920.1080" timestamp="1602110598001" />
+    <state x="2481" y="887" width="374" height="626" key="#com.intellij.ide.util.MemberChooser" timestamp="1602111081433">
+      <screen x="1680" y="648" width="1920" height="1080" />
+    </state>
+    <state x="2481" y="887" width="374" height="626" key="#com.intellij.ide.util.MemberChooser/1680.648.1920.1080/0.675.1680.375@1680.648.1920.1080" timestamp="1602111081433" />
+    <state x="2405" y="992" width="525" height="416" key="#com.intellij.ide.util.TreeClassChooserDialog" timestamp="1602110593786">
+      <screen x="1680" y="648" width="1920" height="1080" />
+    </state>
+    <state x="2405" y="992" width="525" height="416" key="#com.intellij.ide.util.TreeClassChooserDialog/1680.648.1920.1080/0.675.1680.375@1680.648.1920.1080" timestamp="1602110593786" />
+    <state width="1807" height="278" key="GridCell.Tab.0.bottom" timestamp="1602113485696">
+      <screen x="1680" y="648" width="1920" height="1080" />
+    </state>
+    <state width="1807" height="278" key="GridCell.Tab.0.bottom/1680.648.1920.1080/0.675.1680.375@1680.648.1920.1080" timestamp="1602113485696" />
+    <state width="1807" height="278" key="GridCell.Tab.0.center" timestamp="1602113485696">
+      <screen x="1680" y="648" width="1920" height="1080" />
+    </state>
+    <state width="1807" height="278" key="GridCell.Tab.0.center/1680.648.1920.1080/0.675.1680.375@1680.648.1920.1080" timestamp="1602113485696" />
+    <state width="1807" height="278" key="GridCell.Tab.0.left" timestamp="1602113485696">
+      <screen x="1680" y="648" width="1920" height="1080" />
+    </state>
+    <state width="1807" height="278" key="GridCell.Tab.0.left/1680.648.1920.1080/0.675.1680.375@1680.648.1920.1080" timestamp="1602113485696" />
+    <state width="1807" height="278" key="GridCell.Tab.0.right" timestamp="1602113485696">
+      <screen x="1680" y="648" width="1920" height="1080" />
+    </state>
+    <state width="1807" height="278" key="GridCell.Tab.0.right/1680.648.1920.1080/0.675.1680.375@1680.648.1920.1080" timestamp="1602113485696" />
+    <state width="1807" height="278" key="GridCell.Tab.1.bottom" timestamp="1602113485696">
+      <screen x="1680" y="648" width="1920" height="1080" />
+    </state>
+    <state width="1807" height="278" key="GridCell.Tab.1.bottom/1680.648.1920.1080/0.675.1680.375@1680.648.1920.1080" timestamp="1602113485696" />
+    <state width="1807" height="278" key="GridCell.Tab.1.center" timestamp="1602113485696">
+      <screen x="1680" y="648" width="1920" height="1080" />
+    </state>
+    <state width="1807" height="278" key="GridCell.Tab.1.center/1680.648.1920.1080/0.675.1680.375@1680.648.1920.1080" timestamp="1602113485696" />
+    <state width="1807" height="278" key="GridCell.Tab.1.left" timestamp="1602113485696">
+      <screen x="1680" y="648" width="1920" height="1080" />
+    </state>
+    <state width="1807" height="278" key="GridCell.Tab.1.left/1680.648.1920.1080/0.675.1680.375@1680.648.1920.1080" timestamp="1602113485696" />
+    <state width="1807" height="278" key="GridCell.Tab.1.right" timestamp="1602113485696">
+      <screen x="1680" y="648" width="1920" height="1080" />
+    </state>
+    <state width="1807" height="278" key="GridCell.Tab.1.right/1680.648.1920.1080/0.675.1680.375@1680.648.1920.1080" timestamp="1602113485696" />
+    <state x="2156" y="778" width="1024" height="845" key="SettingsEditor" timestamp="1602110571472">
+      <screen x="1680" y="648" width="1920" height="1080" />
+    </state>
+    <state x="2156" y="778" width="1024" height="845" key="SettingsEditor/1680.648.1920.1080/0.675.1680.375@1680.648.1920.1080" timestamp="1602110571472" />
+  </component>
+</project>
