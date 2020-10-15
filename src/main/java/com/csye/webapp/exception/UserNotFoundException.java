@@ -1,4 +1,4 @@
-package com.csye.webapp.user;
+package com.csye.webapp.exception;
 
 
 import org.springframework.http.HttpStatus;
@@ -14,7 +14,6 @@ public class UserNotFoundException extends RuntimeException {
      * @param message the detail message. The detail message is saved for
      *                later retrieval by the {@link #getMessage()} method.
      */
-
 
     public UserNotFoundException(String message) {
         super(message);
