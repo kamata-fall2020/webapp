@@ -2,6 +2,7 @@ package com.csye.webapp.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -35,9 +36,17 @@ public class CustomWebSecurityConfigurerAdapter extends WebSecurityConfigurerAda
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-        http.csrf().disable().cors().disable().authorizeRequests().antMatchers("/v1/user/self").authenticated().and().httpBasic();
+        http.csrf().disable().cors().disable().authorizeRequests().antMatchers("/v1/user/self").authenticated()
+                .and().authorizeRequests().antMatchers(HttpMethod.POST,"/v1/question/**").authenticated()
+                .and().authorizeRequests().antMatchers(HttpMethod.DELETE,"/v1/question/**").authenticated()
+                .and().authorizeRequests().antMatchers(HttpMethod.DELETE,"/v1/question/**/answer/**").authenticated()
+                .and().authorizeRequests().antMatchers(HttpMethod.PUT,"/v1/question/**").authenticated()
+                .and().authorizeRequests().antMatchers(HttpMethod.PUT,"/v1/question/**/answer/**").authenticated()
+                .and().httpBasic();
 //                .and().formLogin().permitAll()
 //                .and().logout().permitAll();
+
+
 
     }
 }
