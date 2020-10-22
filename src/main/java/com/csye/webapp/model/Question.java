@@ -1,6 +1,5 @@
 package com.csye.webapp.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.ReadOnlyProperty;
 
@@ -32,6 +31,11 @@ public class Question {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = false)
     @JoinColumn(name = "question_id")
     private List<Answer> answerList = new ArrayList<>();
+
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = false)
+    @JoinColumn(name = "question_id")
+    private List<Files> fileList = new ArrayList<>();
 
     public Set<Category> getCategories() {
         return categories;
@@ -80,6 +84,14 @@ public class Question {
 
     public List<Answer> getAnswerList() {
         return answerList;
+    }
+
+    public List<Files> getFileList() {
+        return fileList;
+    }
+
+    public void setFileList(List<Files> fileList) {
+        this.fileList = fileList;
     }
 
     public void setAnswerList(List<Answer> answerList) {

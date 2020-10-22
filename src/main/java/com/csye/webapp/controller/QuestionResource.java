@@ -4,19 +4,15 @@ import com.csye.webapp.exception.ImproperException;
 import com.csye.webapp.exception.UnauthorizedException;
 import com.csye.webapp.exception.UserNotFoundException;
 import com.csye.webapp.model.Category;
+import com.csye.webapp.model.Files;
 import com.csye.webapp.model.Question;
 import com.csye.webapp.model.User;
-import com.csye.webapp.repository.AnswerRepository;
-import com.csye.webapp.repository.CategoryRepository;
-import com.csye.webapp.repository.QuestionRepository;
-import com.csye.webapp.repository.UserRepository;
-import org.hibernate.criterion.Restrictions;
+import com.csye.webapp.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.sql.Timestamp;
@@ -28,6 +24,12 @@ public class QuestionResource {
         @Autowired
         private UserRepository userRepository;
 
+    @Autowired
+    private AWSS3Service service;
+
+
+    @Autowired
+    private FileRepository fileRepository;
 
         @Autowired
         private QuestionRepository questionRepository;
@@ -157,6 +159,12 @@ public class QuestionResource {
                 throw new ImproperException("Question has answer so cannot delete");
             }
 
+            List<Files> file = fileRepository.findAll();
+            for (Files files : file) {
+                if (files.getQuestion_id().equals(question_id))
+                   // authenticatedUser = internalUser;
+                service.deleteFile(files.getS3_object_name());
+            }
         questionRepository.deleteById(question_id);
             return ResponseEntity.noContent().build();
     }
@@ -197,6 +205,89 @@ public class QuestionResource {
         questionRepository.save(questionById.get());
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/v1/question/{question_id}/file")
+    public Files uploadFile(@PathVariable String question_id, Authentication authentication, @RequestPart(value = "file") MultipartFile fileInput) {
+        List<User> users = userRepository.findAll();
+        Files file = new Files();
+        User authenticatedUser = null;
+        for(User internalUser : users){
+            if(internalUser.getUsername().equals(authentication.getName()))
+                authenticatedUser = internalUser;
+        }
+        if(authenticatedUser==null){
+            throw new UnauthorizedException("user not found");
+        }
+        Optional<Question> questionById = questionRepository.findById(question_id);
+        if(!questionById.isPresent()){
+            throw new UserNotFoundException("question not found");
+        }
+        if(!questionById.get().getUser_id().equals(authenticatedUser.getUser_id())){
+            throw new UnauthorizedException(" question does not belong to User");
+        }
+
+        String file_name ="";
+        Timestamp date = new Timestamp(System.currentTimeMillis());
+
+            try {
+
+                if (fileInput.getOriginalFilename().isEmpty()){
+                    throw new UserNotFoundException("file is not present");
+                }
+                file_name = question_id+"/"+date.toString()+"/"+fileInput.getOriginalFilename().replace(" ", "_");
+           service.uploadFile(file_name,fileInput);
+
+        } catch (Exception e) {
+
+            throw new ImproperException("Some issue while processing file");
+        }
+        file.setQuestion_id(question_id);
+        file.setCreated_Date(date);
+        file.setFile_name(fileInput.getOriginalFilename().replace(" ", "_"));
+        file.setSize(fileInput.getSize());
+        file.setContentType(fileInput.getContentType());
+        file.setS3_object_name(file_name);
+        fileRepository.save(file);
+
+    return file;
+    }
+
+
+    @DeleteMapping("/v1/question/{question_id}/file/{file_id}")
+    public ResponseEntity<Object> deleteFile(@PathVariable String question_id,@PathVariable String file_id,Authentication authentication) {
+
+
+        List<User> users = userRepository.findAll();
+        User authenticatedUser = null;
+        for (User internalUser : users) {
+            if (internalUser.getUsername().equals(authentication.getName()))
+                authenticatedUser = internalUser;
+        }
+        if(authenticatedUser==null){
+            throw new UnauthorizedException("user not found");
+        }
+
+        Optional<Question> question = questionRepository.findById(question_id);
+
+        if (!question.isPresent())
+            throw new UserNotFoundException("Question not found" + question_id);
+
+        if(!question.get().getUser_id().equals(authenticatedUser.getUser_id())){
+            throw new UnauthorizedException("User has not written this question");
+        }
+
+        Optional<Files> file = fileRepository.findById(file_id);
+
+        if (!file.isPresent())
+            throw new UserNotFoundException("file not found" + question_id);
+        if(!file.get().getQuestion_id().equals(question_id))
+            throw new UnauthorizedException("file does not belong to question");
+
+        service.deleteFile(file.get().getS3_object_name());
+        fileRepository.deleteById(file.get().getFile_id());
+        return ResponseEntity.noContent().build();
+    }
+
 
 
 

@@ -5,6 +5,8 @@ import org.springframework.data.annotation.ReadOnlyProperty;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Answer {
@@ -19,6 +21,12 @@ public class Answer {
     private String question_id;
 
     private String answer_text;
+
+
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = false)
+    @JoinColumn(name = "answer_id")
+    private List<Files> fileList = new ArrayList<>();
 
 
     @ReadOnlyProperty
@@ -74,6 +82,14 @@ public class Answer {
 
     public void setAnswer_text(String answer_text) {
         this.answer_text = answer_text;
+    }
+
+    public List<Files> getFileList() {
+        return fileList;
+    }
+
+    public void setFileList(List<Files> fileList) {
+        this.fileList = fileList;
     }
 
 
