@@ -2,6 +2,7 @@ package com.csye.webapp.controller;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
@@ -23,10 +24,9 @@ import java.util.List;
 public class AWSS3ServiceImpl implements AWSS3Service {
 
 
-    @Autowired
     private AmazonS3 amazonS3;
 
-   @Value("${aws.s3.bucket}")
+    @Value("${aws.s3.bucket}")
     private String bucketName;
 
     @Override
@@ -57,7 +57,7 @@ public class AWSS3ServiceImpl implements AWSS3Service {
     }
 
     private void uploadFileToS3Bucket(String bucketName, final String file_name, final File file) {
-
+        amazonS3 = new AmazonS3Client();
         try {
 
             final PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, file_name, file);
@@ -73,6 +73,7 @@ public class AWSS3ServiceImpl implements AWSS3Service {
     // but not consume the main thread.
     @Async
     public void deleteFile(final String file_name){
+       amazonS3 = new AmazonS3Client();
         try {
             if(!amazonS3.doesObjectExist(bucketName,file_name)){
                 throw new UserNotFoundException("The file you are trying to delete does not exist in S3");

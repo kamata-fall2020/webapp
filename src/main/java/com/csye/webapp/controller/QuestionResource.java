@@ -239,7 +239,7 @@ public class QuestionResource {
 
         } catch (Exception e) {
 
-            throw new ImproperException("Some issue while processing file");
+            throw new ImproperException("Some issue while processing file " + e);
         }
         file.setQuestion_id(question_id);
         file.setCreated_Date(date);

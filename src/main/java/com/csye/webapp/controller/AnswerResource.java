@@ -99,6 +99,12 @@ public class AnswerResource {
             if (questionAnswerList.get(i).getAnswer_id().equals(answer.get().getAnswer_id())) {
                 flag = 1;
                 questionAnswerList.remove(i);
+                List<Files> file = fileRepository.findAll();
+                for (Files files : file) {
+                    if (files.getAnswer_id().equals(answer_id))
+                        // authenticatedUser = internalUser;
+                        service.deleteFile(files.getS3_object_name());
+                }
 
             }
         }
@@ -229,8 +235,10 @@ public class AnswerResource {
                             throw new ImproperException("Some issue while processing file");
                         }
                         file.setAnswer_id(answer_id);
-                        file.setQuestion_id(question_id);
+                       // file.setQuestion_id(question_id);
                         file.setCreated_Date(date);
+                        file.setContentType(fileInput.getContentType());
+                        file.setSize(fileInput.getSize());
                         file.setFile_name(fileInput.getOriginalFilename().replace(" ", "_"));
                         file.setS3_object_name(file_name);
                         fileRepository.save(file);
