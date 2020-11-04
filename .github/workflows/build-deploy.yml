@@ -59,3 +59,4 @@ jobs:
             --s3-location bucket=codedeploy.adityakamatcsye.me,key=csye6225-webapp-${{ github.run_number }}.zip,bundleType=zip \
             --region us-east-1 \
             --output json
+
