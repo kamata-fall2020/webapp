@@ -4,7 +4,7 @@ os: linux
 
 # giving permission to files and folders to centos user in home directory
 files:
-  - source: ./webapp/target/webapp-0.0.1-SNAPSHOT.war
+  - source: /
 
 
     destination: /home/ubuntu/
