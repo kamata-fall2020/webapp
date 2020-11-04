@@ -5,21 +5,18 @@ os: linux
 # giving permission to files and folders to centos user in home directory
 files:
   - source: /
-
-
-
     destination: /home/ubuntu/
 
 hooks:
   ApplicationStop:
-    - location: scripts/server_stop.sh
+    - location: CodeDeploy/server_stop.sh
       timeout: 180
       runas: ubuntu
   ApplicationStart:
-    - location: scripts/server_start.sh
+    - location: CodeDeploy/server_start.sh
       timeout: 180
       runas: ubuntu
   ValidateService:
-    - location: scripts/server_validate.sh
+    - location: CodeDeploy/server_validate.sh
       timeout: 180
       runas: ubuntu
