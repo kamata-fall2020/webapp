@@ -9,14 +9,15 @@ files:
 
 hooks:
   ApplicationStop:
-    - location: CodeDeploy/server_stop.sh
+
+    - location: ./CodeDeploy/server_stop.sh
       timeout: 180
       runas: ubuntu
   ApplicationStart:
-    - location: CodeDeploy/server_start.sh
+    - location: ./CodeDeploy/server_start.sh
       timeout: 180
       runas: ubuntu
   ValidateService:
-    - location: CodeDeploy/server_validate.sh
+    - location: ./CodeDeploy/server_validate.sh
       timeout: 180
       runas: ubuntu  
