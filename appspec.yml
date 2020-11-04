@@ -19,4 +19,4 @@ hooks:
   ValidateService:
     - location: CodeDeploy/server_validate.sh
       timeout: 180
-      runas: ubuntu
+      runas: ubuntu  
