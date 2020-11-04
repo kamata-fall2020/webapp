@@ -1,0 +1,18 @@
+# code deploy workflow
+version: 0.0
+os: linux
+
+# giving permission to files and folders to centos user in home directory
+files:
+  - source: /
+    destination: /home/ubuntu/
+
+hooks:
+  ApplicationStop:
+    - location: ./CodeDeploy/server_stop.sh
+      timeout: 180
+      runas: ubuntu
+  ApplicationStart:
+    - location: ./CodeDeploy/server_start.sh
+      timeout: 180
+      runas: ubuntu
