@@ -43,15 +43,21 @@ jobs:
           cd codedeploy_artifact
           ls -al
       - name: copy to S3
-        run: aws s3 cp codedeploy_artifact/csye6225-webapp-${{ github.run_number }}.zip s3://codedeploy.adityakamatcsye.me/csye6225-webapp-${{ github.run_number }}.zip
+        run: aws s3 cp codedeploy_artifact/csye6225-webapp-${{ github.run_number }}.zip s3://${{ secrets.AWS_BUCKET_PROVIDER }}.codedeploy.adityakamatcsye.me/csye6225-webapp-${{ github.run_number }}.zip
       - name: CodeDeploy API call
         run: |
-          aws deploy create-deployment \
+          output=$(aws deploy create-deployment \
             --application-name "csye6225-webapp" \
             --deployment-config-name CodeDeployDefault.AllAtOnce \
             --deployment-group-name "csye6225-webapp-deployment" \
             --description "CSYE6225 - Codedeploy" \
-            --s3-location bucket=codedeploy.adityakamatcsye.me,key=csye6225-webapp-${{ github.run_number }}.zip,bundleType=zip \
+            --s3-location bucket=${{ secrets.AWS_BUCKET_PROVIDER }}.codedeploy.adityakamatcsye.me,key=csye6225-webapp-${{ github.run_number }}.zip,bundleType=zip \
             --region us-east-1 \
-            --output json
+            --output json)
+          echo $output
+          dId=$(echo $output | jq -r '.deploymentId')
+
+          aws deploy wait deployment-successful --deployment-id $dId
+
+
 
