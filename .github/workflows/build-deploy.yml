@@ -41,7 +41,7 @@ jobs:
         run: |
           pwd
           mkdir codedeploy_artifact
-          zip -r csye6225-webapp-${{ github.run_number }}.zip /target/webapp-0.0.1-SNAPSHOT.war CodeDeploy/*.sh appspec.yml
+          zip -r csye6225-webapp-${{ github.run_number }}.zip webapp/target/webapp-0.0.1-SNAPSHOT.war CodeDeploy/*.sh appspec.yml
           pwd
           ls -al
           mv csye6225-webapp-${{ github.run_number }}.zip codedeploy_artifact/
