@@ -31,7 +31,6 @@ jobs:
         run: mvn -B package --file pom.xml
       - name: Build war
         run: |
-          cd webapp/
           mvn install -DskipTests
       - name: Build Deployment Artifact
         run: |
