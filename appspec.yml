@@ -1,0 +1,21 @@
+# code deploy workflow
+version: 0.0
+os: linux
+
+# giving permission to files and folders to centos user in home directory
+files:
+  - source: ./webapp/target/webapp-0.0.1-SNAPSHOT.war
+    destination: /opt/tomcat/webapps/
+
+hooks:
+  BeforeInstall:
+    - location: ./CodeDeploy/beforeInstall.sh
+      timeout: 300
+
+  AfterInstall:
+    - location: ./CodeDeploy/afterInstall.sh
+      timeout: 300
+
+  ApplicationStart:
+    - location: ./CodeDeploy/applicationStart.sh
+      timeout: 300
