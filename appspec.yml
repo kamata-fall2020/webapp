@@ -5,17 +5,18 @@ os: linux
 # giving permission to files and folders to centos user in home directory
 files:
   - source: ./webapp/target/webapp-0.0.1-SNAPSHOT.war
-    destination: /opt/tomcat/webapps/
+    destination: /home/ubuntu/
 
 hooks:
-  BeforeInstall:
-    - location: ./CodeDeploy/beforeInstall.sh
-      timeout: 300
-
-  AfterInstall:
-    - location: ./CodeDeploy/afterInstall.sh
-      timeout: 300
-
+  ApplicationStop:
+    - location: scripts/server_stop.sh
+      timeout: 180
+      runas: ubuntu
   ApplicationStart:
-    - location: ./CodeDeploy/applicationStart.sh
-      timeout: 300
+    - location: scripts/server_start.sh
+      timeout: 180
+      runas: ubuntu
+  ValidateService:
+    - location: scripts/server_validate.sh
+      timeout: 180
+      runas: ubuntu
