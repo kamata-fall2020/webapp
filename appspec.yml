@@ -5,8 +5,6 @@ os: linux
 # giving permission to files and folders to centos user in home directory
 files:
   - source: /
-
-
     destination: /home/ubuntu/
 
 hooks:
