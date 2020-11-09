@@ -8,3 +8,4 @@ sudo chmod +rwx /opt/aws/amazon-cloudwatch-agent/doc/amazon-cloudwatch-agent-sch
 #    -m ec2 \
 #    -c file:/opt/aws/amazon-cloudwatch-agent/doc/amazon-cloudwatch-agent-schema.json \
 #    -s
+
