@@ -4,7 +4,7 @@ sudo chmod +rwx /opt/aws/amazon-cloudwatch-agent/doc/amazon-cloudwatch-agent-sch
 sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
     -a fetch-config \
     -m ec2 \
-    -c file:amazon-cloudwatch-agent-schema.json \
+    -c file:/home/ubuntu/amazon-cloudwatch-agent-schema.json \
     -s
 
 
