@@ -35,7 +35,7 @@ jobs:
         run: |
           pwd
           mkdir codedeploy_artifact
-          zip -r csye6225-webapp-${{ github.run_number }}.zip target/webapp-0.0.1-SNAPSHOT.jar CodeDeploy/*.sh appspec.yml
+          zip -r csye6225-webapp-${{ github.run_number }}.zip target/webapp-0.0.1-SNAPSHOT.jar CodeDeploy/*.sh appspec.yml amazon-cloudwatch-agent-schema.json
           pwd
           ls -al
           mv csye6225-webapp-${{ github.run_number }}.zip codedeploy_artifact/
