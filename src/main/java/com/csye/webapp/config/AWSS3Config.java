@@ -1,4 +1,4 @@
-package com.csye.webapp.controller;
+package com.csye.webapp.config;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
