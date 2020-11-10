@@ -8,6 +8,9 @@ import com.csye.webapp.model.Files;
 import com.csye.webapp.model.Question;
 import com.csye.webapp.model.User;
 import com.csye.webapp.repository.*;
+import com.timgroup.statsd.StatsDClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -21,8 +24,13 @@ import java.util.*;
 @RestController
 public class QuestionResource {
 
-        @Autowired
-        private UserRepository userRepository;
+    private final static Logger logger = LoggerFactory.getLogger(UserResource.class);
+
+    @Autowired
+    StatsDClient statsDClient;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private AWSS3Service service;
@@ -43,6 +51,12 @@ public class QuestionResource {
 
         @PostMapping("/v1/question")
         public Question postQuestion(@Valid @RequestBody Question question, Authentication authentication) {
+
+            logger.info("POST Request for Create Question ");
+
+            long start = System.currentTimeMillis();
+            statsDClient.incrementCounter("endpoint.question.http.post");
+
             List<User> users = userRepository.findAll();
             User authenticatedUser = null;
             for (User internalUser : users) {
@@ -117,6 +131,10 @@ public class QuestionResource {
             }
             questionRepository.save(question);
 
+            long end = System.currentTimeMillis();
+            long result = end-start;
+            statsDClient.recordExecutionTime("timer.question.post",result);
+
 
             return question;
         }
@@ -124,17 +142,27 @@ public class QuestionResource {
     // Retrieve question details as per question_id
     @GetMapping("/v1/question/{question_id}")
     public Question retrieveUser(@PathVariable String question_id) throws UserNotFoundException {
+        logger.info("GET Request for  Question by ID ");
+
+        long start = System.currentTimeMillis();
+        statsDClient.incrementCounter("endpoint.question.http.get");
         Optional<Question> question = questionRepository.findById(question_id);
 
         if (!question.isPresent())
             throw new UserNotFoundException("Question id not found" + question_id);
 
+        long end = System.currentTimeMillis();
+        long result = end-start;
+        statsDClient.recordExecutionTime("timer.question.get",result);
+
         return question.get();
     }
 
         @DeleteMapping("/v1/question/{question_id}")
-       public ResponseEntity<Object> deleteQuestion(@PathVariable String question_id, Authentication authentication) {
-
+       public ResponseEntity<Object> deleteQuestion(@PathVariable String question_id, Authentication authentication) { logger.info("POST Request for Create Question ");
+            logger.info("Delete Request for  Question by ID ");
+            long start = System.currentTimeMillis();
+            statsDClient.incrementCounter("endpoint.question.http.delete");
 
             List<User> users = userRepository.findAll();
             User authenticatedUser = null;
@@ -166,23 +194,43 @@ public class QuestionResource {
                 service.deleteFile(files.getS3_object_name());
             }
         questionRepository.deleteById(question_id);
+
+
+            long end = System.currentTimeMillis();
+            long result = end-start;
+            statsDClient.recordExecutionTime("timer.question.delete",result);
             return ResponseEntity.noContent().build();
     }
 
 
         @GetMapping("v1/questions")
         public List<Question> retrieveAllUsers() throws UserNotFoundException {
+
+            logger.info("Get Request for all Questions");
+            long start = System.currentTimeMillis();
+            statsDClient.incrementCounter("endpoint.question.all.http.get");
+
+
             List<Question> questions = questionRepository.findAll();
             if(questions.isEmpty()){
                 throw new  UserNotFoundException("Questions Not Found");
             }
 
+
+            long end = System.currentTimeMillis();
+            long result = end-start;
+            statsDClient.recordExecutionTime("timer.question.all.get",result);
             return questionRepository.findAll();
     }
 
     @PutMapping("/v1/question/{question_id}")
     public ResponseEntity<Object> updateQuestion(@PathVariable String question_id, @RequestBody Question question, Authentication authentication){
-        List<User> users = userRepository.findAll();
+
+        logger.info("Get Request for all Questions");
+        long start = System.currentTimeMillis();
+        statsDClient.incrementCounter("endpoint.question.http.put");
+
+            List<User> users = userRepository.findAll();
         User authenticatedUser = null;
         for(User internalUser : users){
             if(internalUser.getUsername().equals(authentication.getName()))
@@ -203,12 +251,21 @@ public class QuestionResource {
         questionById.get().setQuestion_updated(new Timestamp(System.currentTimeMillis()));
         questionById.get().setCategories(question.getCategories());
         questionRepository.save(questionById.get());
+
+        long end = System.currentTimeMillis();
+        long result = end-start;
+        statsDClient.recordExecutionTime("timer.question.put",result);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/v1/question/{question_id}/file")
     public Files uploadFile(@PathVariable String question_id, Authentication authentication, @RequestPart(value = "file") MultipartFile fileInput) {
-        List<User> users = userRepository.findAll();
+
+        logger.info("Post Request for create File in Questions");
+        long start = System.currentTimeMillis();
+        statsDClient.incrementCounter("endpoint.question.file.post");
+
+            List<User> users = userRepository.findAll();
         Files file = new Files();
         User authenticatedUser = null;
         for(User internalUser : users){
@@ -248,14 +305,18 @@ public class QuestionResource {
         file.setContentType(fileInput.getContentType());
         file.setS3_object_name(file_name);
         fileRepository.save(file);
-
+        long end = System.currentTimeMillis();
+        long result = end-start;
+        statsDClient.recordExecutionTime("timer.question.file.post",result);
     return file;
     }
 
 
     @DeleteMapping("/v1/question/{question_id}/file/{file_id}")
     public ResponseEntity<Object> deleteFile(@PathVariable String question_id,@PathVariable String file_id,Authentication authentication) {
-
+        logger.info("Post Request for create File in Questions");
+        long start = System.currentTimeMillis();
+        statsDClient.incrementCounter("endpoint.question.file.delete");
 
         List<User> users = userRepository.findAll();
         User authenticatedUser = null;
@@ -285,6 +346,10 @@ public class QuestionResource {
 
         service.deleteFile(file.get().getS3_object_name());
         fileRepository.deleteById(file.get().getFile_id());
+
+        long end = System.currentTimeMillis();
+        long result = end-start;
+        statsDClient.recordExecutionTime("timer.question.file.delete",result);
         return ResponseEntity.noContent().build();
     }
 
