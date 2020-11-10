@@ -5,6 +5,9 @@ import com.csye.webapp.exception.UnauthorizedException;
 import com.csye.webapp.exception.UserNotFoundException;
 import com.csye.webapp.model.*;
 import com.csye.webapp.repository.*;
+import com.timgroup.statsd.StatsDClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -18,6 +21,11 @@ import java.util.Optional;
 
 @RestController
 public class AnswerResource {
+
+    private final static Logger logger = LoggerFactory.getLogger(UserResource.class);
+    @Autowired
+    StatsDClient statsDClient;
+
 
     @Autowired
     private UserRepository userRepository;
@@ -43,6 +51,11 @@ public class AnswerResource {
 
     @PostMapping("/v1/question/{question_id}/answer")
     public Answer answerQuestion(@PathVariable String question_id, @Valid @RequestBody Answer answer, Authentication authentication) throws UserNotFoundException {
+        logger.info("POST Request for Create Answer ");
+
+        long start = System.currentTimeMillis();
+        statsDClient.incrementCounter("endpoint.answer.http.post");
+
         List<User> users = userRepository.findAll();
         User authenticatedUser = null;
         for (User internalUser : users) {
@@ -66,11 +79,19 @@ public class AnswerResource {
 
         answerRepository.save(answer);
 
+        long end = System.currentTimeMillis();
+        long result = end-start;
+        statsDClient.recordExecutionTime("timer.answer.post",result);
+
         return answer;
     }
 
     @DeleteMapping("/v1/question/{question_id}/answer/{answer_id}")
     public ResponseEntity<Object> deleteAnswer(@PathVariable String question_id,@PathVariable String answer_id, Authentication authentication) {
+        logger.info("DELETE  Request for  Answer ");
+
+        long start = System.currentTimeMillis();
+        statsDClient.incrementCounter("endpoint.answer.http.delete");
         List<User> users = userRepository.findAll();
         User authenticatedUser = null;
         for (User internalUser : users) {
@@ -116,12 +137,20 @@ public class AnswerResource {
         question.get().setAnswerList(questionAnswerList);
         questionRepository.save(question.get());
 
+        long end = System.currentTimeMillis();
+        long result = end-start;
+        statsDClient.recordExecutionTime("timer.answer.delete",result);
         return ResponseEntity.noContent().build();
     }
 
 
     @PutMapping("/v1/question/{question_id}/answer/{answer_id}")
     public ResponseEntity<Object> updateAnswer(@PathVariable String question_id,@PathVariable String answer_id,@Valid @RequestBody Answer answer, Authentication authentication){
+        logger.info("PUT  Request for  Answer ");
+
+        long start = System.currentTimeMillis();
+        statsDClient.incrementCounter("endpoint.answer.http.put");
+
         List<User> users = userRepository.findAll();
         User authenticatedUser = null;
         for(User internalUser : users){
@@ -163,11 +192,19 @@ public class AnswerResource {
         answer.setAnswer_updated(new Timestamp(System.currentTimeMillis()));
 
         answerRepository.save(answer);
+
+        long end = System.currentTimeMillis();
+        long result = end-start;
+        statsDClient.recordExecutionTime("timer.answer.put",result);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/v1/question/{question_id}/answer/{answer_id}")
     public Answer updateAnswer(@PathVariable String question_id,@PathVariable String answer_id){
+        logger.info("GET  Request for  Answer by id");
+
+        long start = System.currentTimeMillis();
+        statsDClient.incrementCounter("endpoint.answer.http.get");
         Optional<Question> question = questionRepository.findById(question_id);
         if (!question.isPresent()) {
             throw new UserNotFoundException("question is not present" + question_id);
@@ -189,12 +226,21 @@ public class AnswerResource {
                 }
             }
 
+
+        long end = System.currentTimeMillis();
+        long result = end-start;
+        statsDClient.recordExecutionTime("timer.answer.get",result);
         return answerById.get();
     }
 
 
     @PostMapping("/v1/question/{question_id}/answer/{answer_id}/file")
     public Files createFile(@PathVariable String question_id, @PathVariable String answer_id, @RequestPart(value = "file") MultipartFile fileInput, Authentication authentication){
+        logger.info("POST  Request for  Answer File by id");
+
+        long start = System.currentTimeMillis();
+        statsDClient.incrementCounter("endpoint.answer.file.http.post");
+
         List<User> users = userRepository.findAll();
         Files file = new Files();
         User authenticatedUser = null;
@@ -256,12 +302,19 @@ public class AnswerResource {
             }
         }
 
+        long end = System.currentTimeMillis();
+        long result = end-start;
+        statsDClient.recordExecutionTime("timer.answer.file.post",result);
         return file;
     }
 
 
     @DeleteMapping("/v1/question/{question_id}/answer/{answer_id}/file/{file_id}")
     public ResponseEntity<Object>  deleteFile(@PathVariable String question_id, @PathVariable String answer_id,@PathVariable String file_id, Authentication authentication){
+        logger.info("DELETE  Request for  Answer File by id");
+
+        long start = System.currentTimeMillis();
+        statsDClient.incrementCounter("endpoint.answer.file.http.delete");
         List<User> users = userRepository.findAll();
         User authenticatedUser = null;
         for(User internalUser : users){
@@ -304,7 +357,9 @@ public class AnswerResource {
                 throw new UnauthorizedException("you cannot delete this file " + file_id);
             }
         }
-
+        long end = System.currentTimeMillis();
+        long result = end-start;
+        statsDClient.recordExecutionTime("timer.answer.file.delete",result);
         return ResponseEntity.noContent().build();
     }
 
