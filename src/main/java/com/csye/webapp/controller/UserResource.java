@@ -1,5 +1,6 @@
 package com.csye.webapp.controller;
 
+
 import com.csye.webapp.exception.ImproperException;
 import com.csye.webapp.exception.UnauthorizedException;
 import com.csye.webapp.exception.UserNotFoundException;
@@ -8,6 +9,9 @@ import com.csye.webapp.repository.AnswerRepository;
 import com.csye.webapp.repository.CategoryRepository;
 import com.csye.webapp.repository.QuestionRepository;
 import com.csye.webapp.repository.UserRepository;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -21,6 +25,8 @@ import java.util.Optional;
 
 @RestController
 public class UserResource {
+
+    private final static Logger logger = LoggerFactory.getLogger(UserResource.class);
 
     @Autowired
     private UserRepository userRepository;
@@ -36,6 +42,7 @@ public class UserResource {
 
     @GetMapping("/v1/user/self")
     public User currentUserName(Authentication authentication) throws UserNotFoundException {
+        logger.info("GET Request for Self User ");
        User authenticatedUser = null;
         List<User> users = userRepository.findAll();
         for(User user : users){
@@ -56,6 +63,7 @@ public class UserResource {
 
     @GetMapping("/users/{id}")
     public User retrieveUser(@PathVariable String id) throws UserNotFoundException {
+        logger.info("GET Request for particular User ");
         Optional<User> user = userRepository.findById(id);
 
         if (!user.isPresent())
@@ -71,6 +79,7 @@ public class UserResource {
 
     @PostMapping("/v1/user")
     public User createUser( @Valid @RequestBody User user) throws UserNotFoundException {
+        logger.info("POST Request for Create User ");
         if(!userRepository.findAll().isEmpty())
             for(User a : userRepository.findAll()){
                 if (a.getUsername().equals(user.getUsername()))
@@ -98,6 +107,7 @@ public class UserResource {
 
     @PutMapping("/v1/user/self")
     public ResponseEntity<Object> updateUser(@Valid @RequestBody User user, Authentication authentication){
+        logger.info("PUT Request for Update User ");
         if (!user.getUsername().equals(authentication.getName()))
             throw new UnauthorizedException("User is not authenticated");
 
