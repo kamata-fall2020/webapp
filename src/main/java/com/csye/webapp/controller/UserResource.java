@@ -90,6 +90,7 @@ public class UserResource {
         long result = end-start;
         statsDClient.recordExecutionTime("timer.user.id.get",result);
 
+
         return user.get();
     }
 
