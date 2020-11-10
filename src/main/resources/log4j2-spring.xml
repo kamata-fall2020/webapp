@@ -9,6 +9,7 @@
         <RollingFile name="RollingFile"
                      fileName="/home/ubuntu/logs/csye6225.log"
                      filePattern="/home/ubuntu/logs/$${date:yyyy-MM}/csye6225-%d{-dd-MMMM-yyyy}-%i.log.gz">
+
             <PatternLayout>
                 <pattern>%d %p %C{1.} [%t] %m%n</pattern>
             </PatternLayout>
