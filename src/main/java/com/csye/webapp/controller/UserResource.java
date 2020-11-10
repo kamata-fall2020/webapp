@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import com.timgroup.statsd.StatsDClient;
 
 import javax.validation.Valid;
 import java.sql.Timestamp;
@@ -40,9 +41,16 @@ public class UserResource {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    StatsDClient statsDClient;
+
     @GetMapping("/v1/user/self")
     public User currentUserName(Authentication authentication) throws UserNotFoundException {
         logger.info("GET Request for Self User ");
+
+        long start = System.currentTimeMillis();
+        statsDClient.incrementCounter("endpoint.user.self.http.get");
+
        User authenticatedUser = null;
         List<User> users = userRepository.findAll();
         for(User user : users){
@@ -52,7 +60,11 @@ public class UserResource {
         if(authenticatedUser==null)
             throw new UnauthorizedException("id-" + authentication.getName());
 
+
        // authenticatedUser.setAccount_created( new Timestamp(System.currentTimeMillis()));
+        long end = System.currentTimeMillis();
+        long result = end-start;
+        statsDClient.recordExecutionTime("timer.user.self.get",result);
         return authenticatedUser;
     }
 
@@ -64,10 +76,21 @@ public class UserResource {
     @GetMapping("/users/{id}")
     public User retrieveUser(@PathVariable String id) throws UserNotFoundException {
         logger.info("GET Request for particular User ");
+
+        long start = System.currentTimeMillis();
+        statsDClient.incrementCounter("endpoint.user.id.http.get");
+
         Optional<User> user = userRepository.findById(id);
 
         if (!user.isPresent())
             throw new UserNotFoundException("id-" + id);
+
+
+        long end = System.currentTimeMillis();
+        long result = end-start;
+        statsDClient.recordExecutionTime("timer.user.id.get",result);
+
+
 
         return user.get();
     }
@@ -80,6 +103,9 @@ public class UserResource {
     @PostMapping("/v1/user")
     public User createUser( @Valid @RequestBody User user) throws UserNotFoundException {
         logger.info("POST Request for Create User ");
+        long start = System.currentTimeMillis();
+        statsDClient.incrementCounter("endpoint.user.http.post");
+
         if(!userRepository.findAll().isEmpty())
             for(User a : userRepository.findAll()){
                 if (a.getUsername().equals(user.getUsername()))
@@ -101,6 +127,10 @@ public class UserResource {
         user.setAccount_updated( new Timestamp(System.currentTimeMillis()));
         userRepository.save(user);
 
+        long end = System.currentTimeMillis();
+        long result = end-start;
+        statsDClient.recordExecutionTime("timer.user.post",result);
+
         return user;
 
     }
@@ -108,6 +138,10 @@ public class UserResource {
     @PutMapping("/v1/user/self")
     public ResponseEntity<Object> updateUser(@Valid @RequestBody User user, Authentication authentication){
         logger.info("PUT Request for Update User ");
+
+        long start = System.currentTimeMillis();
+        statsDClient.incrementCounter("endpoint.user.http.put");
+
         if (!user.getUsername().equals(authentication.getName()))
             throw new UnauthorizedException("User is not authenticated");
 
@@ -137,6 +171,11 @@ public class UserResource {
        // user.setUser_id(user.getUser_id());
         user.setAccount_updated(new Timestamp(System.currentTimeMillis()));
         userRepository.save(user);
+
+        long end = System.currentTimeMillis();
+        long result = end-start;
+        statsDClient.recordExecutionTime("timer.user.put",result);
+
 
         return ResponseEntity.noContent().build();
     }
