@@ -64,6 +64,7 @@ public class QuestionResource {
                     authenticatedUser = internalUser;
             }
             if(authenticatedUser==null){
+                logger.info("POST Request for Create Question didnt work as user is not authenticated "+authentication.getName());
                 throw new UnauthorizedException("User is not authenticated");
             }
             question.setUser_id(authenticatedUser.getUser_id());
@@ -96,6 +97,7 @@ public class QuestionResource {
                                        || cRB.getCategory().contains(", ") || cRB.getCategory().contains("<")
                                        || cRB.getCategory().contains(">") || cRB.getCategory().contains("?")
                                        || cRB.getCategory().contains("|")){
+                                   logger.info("Category should not have special character");
                                    throw new ImproperException("Category should not have special character");
                                }
                                categoryRepository.save(cRB);
@@ -118,6 +120,7 @@ public class QuestionResource {
                            || c.getCategory().contains(", ") || c.getCategory().contains("<")
                            || c.getCategory().contains(">") || c.getCategory().contains("?")
                            || c.getCategory().contains("|")){
+                       logger.info("Category should not have special character");
                        throw new ImproperException("Category should not have special character");
                    }
                    categoryRepository.save(c);
@@ -129,7 +132,11 @@ public class QuestionResource {
             if(!newCategories.isEmpty()) {
                 question.setCategories(newCategories);
             }
+            long startD = System.currentTimeMillis();
             questionRepository.save(question);
+            long endD = System.currentTimeMillis();
+            long resultD = endD-startD;
+            statsDClient.recordExecutionTime("timer.question.database.post",resultD);
 
             long end = System.currentTimeMillis();
             long result = end-start;
@@ -148,8 +155,10 @@ public class QuestionResource {
         statsDClient.incrementCounter("endpoint.question.http.get");
         Optional<Question> question = questionRepository.findById(question_id);
 
-        if (!question.isPresent())
+        if (!question.isPresent()) {
+            logger.info("GET Request for  Question didnt work as questionid not found "+ question_id);
             throw new UserNotFoundException("Question id not found" + question_id);
+        }
 
         long end = System.currentTimeMillis();
         long result = end-start;
@@ -171,29 +180,43 @@ public class QuestionResource {
                     authenticatedUser = internalUser;
             }
             if(authenticatedUser==null){
+                logger.info("Delete Request for  Question didnt work as user not found "+ authentication.getName());
                 throw new UnauthorizedException("user not found");
             }
 
             Optional<Question> question = questionRepository.findById(question_id);
 
-            if (!question.isPresent())
+            if (!question.isPresent()) {
+                logger.info("Delete Request for  Question didnt work as question not found "+ question_id);
                 throw new UserNotFoundException("Question not found" + question_id);
+            }
 
             if(!question.get().getUser_id().equals(authenticatedUser.getUser_id())){
+                logger.info("Delete Request for  Question didnt work as user not formed this question "+ question_id);
                 throw new UnauthorizedException("User has not written this question");
             }
 
             if(!question.get().getAnswerList().isEmpty()){
+                logger.info("Delete Request for  Question didnt work as it has answer ");
                 throw new ImproperException("Question has answer so cannot delete");
             }
 
             List<Files> file = fileRepository.findAll();
             for (Files files : file) {
-                if (files.getQuestion_id().equals(question_id))
-                   // authenticatedUser = internalUser;
-                service.deleteFile(files.getS3_object_name());
+                if (files.getQuestion_id().equals(question_id)) {
+                    // authenticatedUser = internalUser;
+                    long startS3 = System.currentTimeMillis();
+                    service.deleteFile(files.getS3_object_name());
+                    long endS3 = System.currentTimeMillis();
+                    long resultS3 = endS3 - startS3;
+                    statsDClient.recordExecutionTime("timer.question.delete.S3Service", resultS3);
+                }
             }
+            long startD = System.currentTimeMillis();
         questionRepository.deleteById(question_id);
+            long endD = System.currentTimeMillis();
+            long resultD = endD-startD;
+            statsDClient.recordExecutionTime("timer.question.database.delete",resultD);
 
 
             long end = System.currentTimeMillis();
@@ -237,20 +260,27 @@ public class QuestionResource {
                 authenticatedUser = internalUser;
         }
         if(authenticatedUser==null){
+            logger.info("Get Request for all Questions didnt work as user not found "+authentication.getName());
             throw new UnauthorizedException("user not found");
         }
         Optional<Question> questionById = questionRepository.findById(question_id);
         if(!questionById.isPresent()){
+            logger.info("Get Request for all Questions didnt work as question not found "+ question_id);
             throw new UserNotFoundException("question not found");
         }
         if(!questionById.get().getUser_id().equals(authenticatedUser.getUser_id())){
+            logger.info("Get Request for all Questions didnt work as question not formed by user "+ question_id);
             throw new UnauthorizedException(" question does not belong to User");
         }
         questionById.get().setQuestion_id(question_id);
         questionById.get().setQuestion_text(question.getQuestion_text());
         questionById.get().setQuestion_updated(new Timestamp(System.currentTimeMillis()));
         questionById.get().setCategories(question.getCategories());
+        long startD = System.currentTimeMillis();
         questionRepository.save(questionById.get());
+        long endD = System.currentTimeMillis();
+        long resultD = endD-startD;
+        statsDClient.recordExecutionTime("timer.question.database.put",resultD);
 
         long end = System.currentTimeMillis();
         long result = end-start;
@@ -273,13 +303,16 @@ public class QuestionResource {
                 authenticatedUser = internalUser;
         }
         if(authenticatedUser==null){
+            logger.info("Post Request for create File in Questions didnt work as user not found");
             throw new UnauthorizedException("user not found");
         }
         Optional<Question> questionById = questionRepository.findById(question_id);
         if(!questionById.isPresent()){
+            logger.info("Post Request for create File in Questions didnt work as question not found");
             throw new UserNotFoundException("question not found");
         }
         if(!questionById.get().getUser_id().equals(authenticatedUser.getUser_id())){
+            logger.info("Post Request for create File in Questions didnt work as question not formed by user");
             throw new UnauthorizedException(" question does not belong to User");
         }
 
@@ -304,7 +337,12 @@ public class QuestionResource {
         file.setSize(fileInput.getSize());
         file.setContentType(fileInput.getContentType());
         file.setS3_object_name(file_name);
+        long startD = System.currentTimeMillis();
         fileRepository.save(file);
+        long endD = System.currentTimeMillis();
+
+        long resultD = endD-startD;
+        statsDClient.recordExecutionTime("timer.question.database.file.post",resultD);
         long end = System.currentTimeMillis();
         long result = end-start;
         statsDClient.recordExecutionTime("timer.question.file.post",result);
@@ -325,27 +363,42 @@ public class QuestionResource {
                 authenticatedUser = internalUser;
         }
         if(authenticatedUser==null){
+            logger.info("Post Request for create File in Questions didnt work as user not found "+authentication.getName());
             throw new UnauthorizedException("user not found");
         }
 
         Optional<Question> question = questionRepository.findById(question_id);
 
-        if (!question.isPresent())
+        if (!question.isPresent()) {
+            logger.info("Post Request for create File in Questions didnt work as question not found "+question_id);
             throw new UserNotFoundException("Question not found" + question_id);
+        }
 
         if(!question.get().getUser_id().equals(authenticatedUser.getUser_id())){
+            logger.info("Post Request for create File in Questions didnt work as user not formed the question "+ question_id);
             throw new UnauthorizedException("User has not written this question");
         }
 
         Optional<Files> file = fileRepository.findById(file_id);
 
-        if (!file.isPresent())
+        if (!file.isPresent()) {
+            logger.info("file not found");
             throw new UserNotFoundException("file not found" + question_id);
-        if(!file.get().getQuestion_id().equals(question_id))
+        }
+        if(!file.get().getQuestion_id().equals(question_id)) {
+            logger.info("file does not belong to  found");
             throw new UnauthorizedException("file does not belong to question");
-
+        }
+        long startS3 = System.currentTimeMillis();
         service.deleteFile(file.get().getS3_object_name());
+        long endS3 = System.currentTimeMillis();
+        long resultS3 = endS3-startS3;
+        statsDClient.recordExecutionTime("timer.question.file.delete.S3Service",resultS3);
+        long startD = System.currentTimeMillis();
         fileRepository.deleteById(file.get().getFile_id());
+        long endD = System.currentTimeMillis();
+        long resultD = endD-startD;
+        statsDClient.recordExecutionTime("timer.question.database.file.delete",resultD);
 
         long end = System.currentTimeMillis();
         long result = end-start;

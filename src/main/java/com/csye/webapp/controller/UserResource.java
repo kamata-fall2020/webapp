@@ -57,8 +57,10 @@ public class UserResource {
             if(user.getUsername().equals(authentication.getName()))
             authenticatedUser = user;
         }
-        if(authenticatedUser==null)
+        if(authenticatedUser==null) {
+            logger.info("GET Request for Self User didnt work as authentication failed " + authentication.getName());
             throw new UnauthorizedException("id-" + authentication.getName());
+        }
 
 
        // authenticatedUser.setAccount_created( new Timestamp(System.currentTimeMillis()));
@@ -124,7 +126,11 @@ public class UserResource {
         user.setEnabled(1);
         user.setAccount_created( new Timestamp(System.currentTimeMillis()));
         user.setAccount_updated( new Timestamp(System.currentTimeMillis()));
+        long startD = System.currentTimeMillis();
         userRepository.save(user);
+        long endD = System.currentTimeMillis();
+        long resultD = endD-startD;
+        statsDClient.recordExecutionTime("timer.user.database.post",resultD);
 
         long end = System.currentTimeMillis();
         long result = end-start;
@@ -141,8 +147,10 @@ public class UserResource {
         long start = System.currentTimeMillis();
         statsDClient.incrementCounter("endpoint.user.http.put");
 
-        if (!user.getUsername().equals(authentication.getName()))
+        if (!user.getUsername().equals(authentication.getName())) {
+            logger.info("User is not authenticated");
             throw new UnauthorizedException("User is not authenticated");
+        }
 
         List<User> users = userRepository.findAll();
        //
@@ -169,7 +177,11 @@ public class UserResource {
         user.setPassword(encoded_password);
        // user.setUser_id(user.getUser_id());
         user.setAccount_updated(new Timestamp(System.currentTimeMillis()));
+        long startD = System.currentTimeMillis();
         userRepository.save(user);
+        long endD = System.currentTimeMillis();
+        long resultD = endD-startD;
+        statsDClient.recordExecutionTime("timer.user.database.put",resultD);
 
         long end = System.currentTimeMillis();
         long result = end-start;

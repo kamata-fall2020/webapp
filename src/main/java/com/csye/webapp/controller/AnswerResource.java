@@ -62,12 +62,17 @@ public class AnswerResource {
             if (internalUser.getUsername().equals(authentication.getName()))
                 authenticatedUser = internalUser;
         }
-        if(authenticatedUser==null)
+        if(authenticatedUser==null) {
+            logger.info("User logged in is invalid. Username is "+authentication.getName());
             throw new UnauthorizedException("id-" + authentication.getName());
 
+        }
+
         Optional<Question> question = questionRepository.findById(question_id);
-        if (!question.isPresent())
+        if (!question.isPresent()) {
+            logger.info("QuestionID passed is not present "+question_id);
             throw new UserNotFoundException("question is  not present" + question_id);
+        }
 
         answer.setQuestion_id(question_id);
         answer.setUser_id(authenticatedUser.getUser_id());
@@ -76,8 +81,13 @@ public class AnswerResource {
         List<Answer> answerList = question.get().getAnswerList();
         answerList.add(answer);
         question.get().setAnswerList(answerList);
+        long startD = System.currentTimeMillis();
 
         answerRepository.save(answer);
+
+        long endD = System.currentTimeMillis();
+        long resultD = endD-startD;
+        statsDClient.recordExecutionTime("timer.answer.database.post",resultD);
 
         long end = System.currentTimeMillis();
         long result = end-start;
@@ -92,6 +102,7 @@ public class AnswerResource {
 
         long start = System.currentTimeMillis();
         statsDClient.incrementCounter("endpoint.answer.http.delete");
+
         List<User> users = userRepository.findAll();
         User authenticatedUser = null;
         for (User internalUser : users) {
@@ -100,17 +111,21 @@ public class AnswerResource {
         }
         Optional<Answer> answer = answerRepository.findById(answer_id);
         if(authenticatedUser==null){
+            logger.info("DELETE  Request for  Answer didnt work as user is not found in system "+authentication.getName());
             throw new UnauthorizedException("user not found");
         }
         if (!answer.get().getUser_id().equals(authenticatedUser.getUser_id())){
+            logger.info("DELETE  Request for  Answer didnt work as user is not allowed to delete "+authentication.getName());
             throw new UnauthorizedException("you cannot delete this answer" + question_id);
         }
         Optional<Question> question = questionRepository.findById(question_id);
         if (!question.isPresent()) {
+            logger.info("DELETE  Request for  Answer didnt work as question id is not present "+question_id);
             throw new UserNotFoundException("Question not present" + question_id);
         }
         if(!answer.isPresent()) {
-                throw new UserNotFoundException("answer not present " + question_id);
+              logger.info("DELETE  Request for  Answer didnt work as answer id is not present "+answer_id);
+                throw new UserNotFoundException("answer not present " + answer_id);
         }
                 List<Answer> questionAnswerList = question.get().getAnswerList();
                 int flag = 0;
@@ -124,7 +139,14 @@ public class AnswerResource {
                 for (Files files : file) {
                     if (files.getAnswer_id().equals(answer_id))
                         // authenticatedUser = internalUser;
+                    {
+                        long startS3 = System.currentTimeMillis();
                         service.deleteFile(files.getS3_object_name());
+                        long endS3 = System.currentTimeMillis();
+                        long resultS3 = endS3-startS3;
+                        statsDClient.recordExecutionTime("timer.answer.delete.S3Service",resultS3);
+
+                    }
                 }
 
             }
@@ -133,9 +155,15 @@ public class AnswerResource {
                     throw new UnauthorizedException("answer does not belong to specific question" + question_id);
                 }
 
+        long startD = System.currentTimeMillis();
+
         answerRepository.deleteById(answer_id);
         question.get().setAnswerList(questionAnswerList);
         questionRepository.save(question.get());
+
+        long endD = System.currentTimeMillis();
+        long resultD = endD-startD;
+        statsDClient.recordExecutionTime("timer.answer.database.delete",resultD);
 
         long end = System.currentTimeMillis();
         long result = end-start;
@@ -158,15 +186,18 @@ public class AnswerResource {
                 authenticatedUser = internalUser;
         }
         if(authenticatedUser==null){
+            logger.info("PUT  Request didnt work as user not found"+authentication.getName());
             throw new UnauthorizedException("user not found");
         }
         Optional<Question> question = questionRepository.findById(question_id);
         if (!question.isPresent()) {
+            logger.info("PUT  Request didnt work as question not found "+question_id);
             throw new UserNotFoundException("question is not present" + question_id);
         }else{
             Optional<Answer> answerById = answerRepository.findById(answer_id);
             if(!answerById.isPresent()){
-                throw new UserNotFoundException("answer not present" + question_id);
+                logger.info("PUT  Request didnt work as answer not found "+answer_id);
+                throw new UserNotFoundException("answer not present" + answer_id);
             }else {
                 List<Answer> questionAnswerList = question.get().getAnswerList();
                 int flag = 0;
@@ -190,8 +221,13 @@ public class AnswerResource {
         answer.setAnswer_id(answer_id);
         answer.setUser_id(authenticatedUser.getUser_id());
         answer.setAnswer_updated(new Timestamp(System.currentTimeMillis()));
+        long startD = System.currentTimeMillis();
 
         answerRepository.save(answer);
+
+        long endD = System.currentTimeMillis();
+        long resultD = endD-startD;
+        statsDClient.recordExecutionTime("timer.answer.database.put",resultD);
 
         long end = System.currentTimeMillis();
         long result = end-start;
@@ -207,11 +243,13 @@ public class AnswerResource {
         statsDClient.incrementCounter("endpoint.answer.http.get");
         Optional<Question> question = questionRepository.findById(question_id);
         if (!question.isPresent()) {
+            logger.info("GET  Request for  question didnt work as  questionid not present "+ question_id);
             throw new UserNotFoundException("question is not present" + question_id);
         }
             Optional<Answer> answerById = answerRepository.findById(answer_id);
             if(!answerById.isPresent()){
-                throw new UserNotFoundException("answer not present" + question_id);
+                logger.info("GET  Request for  question didnt work as  amswerid not present "+ answer_id);
+                throw new UserNotFoundException("answer not present" + answer_id);
             }else {
                 List<Answer> questionAnswerList = question.get().getAnswerList();
                 int flag = 0;
@@ -249,10 +287,12 @@ public class AnswerResource {
                 authenticatedUser = internalUser;
         }
         if(authenticatedUser==null){
+            logger.info("POST  Request for  Answer File didnt work as user not found "+authentication.getName());
             throw new UnauthorizedException("user not found");
         }
         Optional<Question> question = questionRepository.findById(question_id);
         if (!question.isPresent()) {
+            logger.info("POST  Request for  Answer File didnt work as question not found "+question_id);
             throw new UserNotFoundException("question is not present" + question_id);
         }else{
             Optional<Answer> answerById = answerRepository.findById(answer_id);
@@ -274,7 +314,14 @@ public class AnswerResource {
                                 throw new UserNotFoundException("file is not present");
                             }
                             file_name = answer_id+"/"+date.toString()+"/"+fileInput.getOriginalFilename().replace(" ", "_");
+
+                            long startS3 = System.currentTimeMillis();
+
                             service.uploadFile(file_name,fileInput);
+
+                            long endS3 = System.currentTimeMillis();
+                            long resultS3 = endS3-startS3;
+                            statsDClient.recordExecutionTime("timer.answer.file.post.S3Service",resultS3);
 
                         } catch (Exception e) {
 
@@ -287,8 +334,14 @@ public class AnswerResource {
                         file.setSize(fileInput.getSize());
                         file.setFile_name(fileInput.getOriginalFilename().replace(" ", "_"));
                         file.setS3_object_name(file_name);
+
+                        long startD = System.currentTimeMillis();
+
                         fileRepository.save(file);
                         //fileModel=file;
+                        long endD = System.currentTimeMillis();
+                        long resultD = endD-startD;
+                        statsDClient.recordExecutionTime("timer.answer.database.file.post",resultD);
                     }
 
                 }
@@ -322,15 +375,18 @@ public class AnswerResource {
                 authenticatedUser = internalUser;
         }
         if(authenticatedUser==null){
+            logger.info("DELETE  Request for  Answer didnt work as user not found "+authentication.getName());
             throw new UnauthorizedException("user not found");
         }
         Optional<Question> question = questionRepository.findById(question_id);
         if (!question.isPresent()) {
+            logger.info("DELETE  Request for  Answer didnt work as questionid is not present "+question_id);
             throw new UserNotFoundException("question is not present" + question_id);
         }else{
             Optional<Answer> answerById = answerRepository.findById(answer_id);
             if(!answerById.isPresent()){
-                throw new UserNotFoundException("answer not present" + question_id);
+                logger.info("DELETE  Request for  Answer didnt work as answerid is not present "+answer_id);
+                throw new UserNotFoundException("answer not present" + answer_id);
             }else {
                 List<Answer> questionAnswerList = question.get().getAnswerList();
                 int flag = 0;
@@ -343,8 +399,20 @@ public class AnswerResource {
                             throw new UserNotFoundException("file not found" + question_id);
                         if(!file.get().getAnswer_id().equals(answer_id))
                             throw new UnauthorizedException("file does not belong to answer");
+
+                        long startS3 = System.currentTimeMillis();
+
                         service.deleteFile(file.get().getS3_object_name());
+
+                        long endS3 = System.currentTimeMillis();
+                        long resultS3 = endS3-startS3;
+                        statsDClient.recordExecutionTime("timer.answer.file.delete",resultS3);
+
+                        long startD = System.currentTimeMillis();
                         fileRepository.deleteById(file.get().getFile_id());
+                        long endD = System.currentTimeMillis();
+                        long resultD = endD-startD;
+                        statsDClient.recordExecutionTime("timer.answer.file.delete",resultD);
                     }
 
                 }
