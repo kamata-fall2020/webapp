@@ -32,4 +32,4 @@ Run the project
 5- the command for it is sudo apt install maven
 6- sudo apt update 
 7- mvn spring-boot:run for running the project
-8- APIs can be verified from   Postman
+8- APIs can be verified from    Postman
