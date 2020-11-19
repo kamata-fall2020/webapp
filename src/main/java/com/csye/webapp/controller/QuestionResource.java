@@ -325,7 +325,11 @@ public class QuestionResource {
                     throw new UserNotFoundException("file is not present");
                 }
                 file_name = question_id+"/"+date.toString()+"/"+fileInput.getOriginalFilename().replace(" ", "_");
+                long startS3 = System.currentTimeMillis();
            service.uploadFile(file_name,fileInput);
+                long endS3 = System.currentTimeMillis();
+                long resultS3 = endS3-startS3;
+                statsDClient.recordExecutionTime("timer.question.file.post.S3Service",resultS3);
 
         } catch (Exception e) {
 
