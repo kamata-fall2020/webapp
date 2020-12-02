@@ -207,7 +207,7 @@ public class AnswerResource {
         jsonObject.put("to", user.get().getUsername());
         jsonObject.put("QuestionID",question_id);
         jsonObject.put("AnswerID",answer_id);
-        jsonObject.put("AnswerText","");
+        jsonObject.put("AnswerText",answer.get().getAnswer_text() + "deleted");
         jsonObject.put("userID",authenticatedUser.getUser_id());
         jsonObject.put("userName",authenticatedUser.getFirst_name()+authenticatedUser.getLast_name());
         jsonObject.put("Message", "The answer has been deleted to this specific question ID");
