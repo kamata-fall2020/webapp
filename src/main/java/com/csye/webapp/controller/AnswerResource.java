@@ -109,10 +109,10 @@ public class AnswerResource {
         long end = System.currentTimeMillis();
         long result = end-start;
         statsDClient.recordExecutionTime("timer.answer.post",result);
-
+        Optional<User> user = userRepository.findById(question.get().getUser_id());
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("from", "noreply@"+webappDomain);
-        jsonObject.put("to", "kamat1.aditya@gmail.com");
+        jsonObject.put("to", user.get().getUsername());
         jsonObject.put("QuestionID",question_id);
         jsonObject.put("AnswerText",answer.getAnswer_text());
         jsonObject.put("AnswerID",answer.getAnswer_id());
@@ -199,9 +199,10 @@ public class AnswerResource {
         long end = System.currentTimeMillis();
         long result = end-start;
         statsDClient.recordExecutionTime("timer.answer.delete",result);
+        Optional<User> user = userRepository.findById(question.get().getUser_id());
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("from", "noreply@"+webappDomain);
-        jsonObject.put("to", "kamat1.aditya@gmail.com");
+        jsonObject.put("to", user.get().getUsername());
         jsonObject.put("QuestionID",question_id);
         jsonObject.put("AnswerID",answer_id);
         jsonObject.put("Message", "The answer has been deleted to this specific question ID");
@@ -276,10 +277,11 @@ public class AnswerResource {
         long end = System.currentTimeMillis();
         long result = end-start;
         statsDClient.recordExecutionTime("timer.answer.put",result);
+        Optional<User> user = userRepository.findById(question.get().getUser_id());
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("from", "noreply@"+webappDomain);
-        jsonObject.put("to", "kamat1.aditya@gmail.com");
+        jsonObject.put("to", user.get().getUsername());
         jsonObject.put("QuestionID",question_id);
         jsonObject.put("AnswerID",answer_id);
         jsonObject.put("AnswerText",answer.getAnswer_text());
