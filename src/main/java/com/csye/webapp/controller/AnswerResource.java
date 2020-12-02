@@ -116,6 +116,8 @@ public class AnswerResource {
         jsonObject.put("QuestionID",question_id);
         jsonObject.put("AnswerText",answer.getAnswer_text());
         jsonObject.put("AnswerID",answer.getAnswer_id());
+        jsonObject.put("userID",authenticatedUser.getUser_id());
+        jsonObject.put("userName",authenticatedUser.getFirst_name()+authenticatedUser.getLast_name());
         jsonObject.put("Message", "The answer has been given to this specific question ID");
         jsonObject.put("AnswerLink","http://api." + webappDomain + "/v1/question/" +question_id+"/answer/"+ answer.getAnswer_id() );
         logger.info("JSON string created: " + jsonObject.toString());
@@ -206,6 +208,8 @@ public class AnswerResource {
         jsonObject.put("QuestionID",question_id);
         jsonObject.put("AnswerID",answer_id);
         jsonObject.put("AnswerText","");
+        jsonObject.put("userID",authenticatedUser.getUser_id());
+        jsonObject.put("userName",authenticatedUser.getFirst_name()+authenticatedUser.getLast_name());
         jsonObject.put("Message", "The answer has been deleted to this specific question ID");
       //  jsonObject.put("AnswerLink","http://api." + webappDomain + "/v1/question/" +question_id+"/answer/"+ answer.getAnswer_id() );
         logger.info("JSON string created: " + jsonObject.toString());
@@ -286,6 +290,8 @@ public class AnswerResource {
         jsonObject.put("QuestionID",question_id);
         jsonObject.put("AnswerID",answer_id);
         jsonObject.put("AnswerText",answer.getAnswer_text());
+        jsonObject.put("userID",authenticatedUser.getUser_id());
+        jsonObject.put("userName",authenticatedUser.getFirst_name()+authenticatedUser.getLast_name());
         jsonObject.put("Message", "The answer has been updated to this specific question ID");
         jsonObject.put("AnswerLink","http://api." + webappDomain + "/v1/question/" +question_id+"/answer/"+ answer.getAnswer_id() );
         logger.info("JSON string created: " + jsonObject.toString());
