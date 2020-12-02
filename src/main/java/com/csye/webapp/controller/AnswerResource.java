@@ -1,5 +1,8 @@
 package com.csye.webapp.controller;
 
+import com.amazonaws.services.sns.AmazonSNS;
+import com.amazonaws.services.sns.model.PublishRequest;
+import com.amazonaws.services.sns.model.PublishResult;
 import com.csye.webapp.exception.ImproperException;
 import com.csye.webapp.exception.UnauthorizedException;
 import com.csye.webapp.exception.UserNotFoundException;
@@ -9,6 +12,7 @@ import com.timgroup.statsd.StatsDClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +22,9 @@ import javax.validation.Valid;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 @RestController
 public class AnswerResource {
@@ -47,6 +54,15 @@ public class AnswerResource {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private AmazonSNS amazonSNS;
+
+    @Value("${webapp.domain}")
+    private String webappDomain;
+
+    @Value("${sns.topic.arn}")
+    private String snsTopicArn;
 
 
     @PostMapping("/v1/question/{question_id}/answer")
@@ -80,6 +96,7 @@ public class AnswerResource {
         answer.setAnswer_updated(new Timestamp(System.currentTimeMillis()));
         List<Answer> answerList = question.get().getAnswerList();
         answerList.add(answer);
+
         question.get().setAnswerList(answerList);
         long startD = System.currentTimeMillis();
 
@@ -93,6 +110,20 @@ public class AnswerResource {
         long result = end-start;
         statsDClient.recordExecutionTime("timer.answer.post",result);
 
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("from", "noreply@"+webappDomain);
+        jsonObject.put("to", "kamat1.aditya@gmail.com");
+        jsonObject.put("QuestionID",question_id);
+        jsonObject.put("AnswerText",answer.getAnswer_text());
+        jsonObject.put("AnswerID",answer.getAnswer_id());
+        jsonObject.put("Message", "The answer has been given to this specific question ID");
+        jsonObject.put("AnswerLink","https://" + webappDomain + "/v1/question/" +question_id+"/answer/"+ answer.getAnswer_id() );
+        logger.info("JSON string created: " + jsonObject.toString());
+        logger.info("Publishing the message to SNS...");
+
+        PublishResult publishResult = amazonSNS.publish(new PublishRequest(snsTopicArn, jsonObject.toString()));
+
+        logger.info("SNS message published: " + publishResult.toString());
         return answer;
     }
 
@@ -168,6 +199,19 @@ public class AnswerResource {
         long end = System.currentTimeMillis();
         long result = end-start;
         statsDClient.recordExecutionTime("timer.answer.delete",result);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("from", "noreply@"+webappDomain);
+        jsonObject.put("to", "kamat1.aditya@gmail.com");
+        jsonObject.put("QuestionID",question_id);
+        jsonObject.put("AnswerID",answer_id);
+        jsonObject.put("Message", "The answer has been deleted to this specific question ID");
+      //  jsonObject.put("AnswerLink","https://" + webappDomain + "/v1/question/" +question_id+"/answer/"+ answer.getAnswer_id() );
+        logger.info("JSON string created: " + jsonObject.toString());
+        logger.info("Publishing the message to SNS...");
+
+        PublishResult publishResult = amazonSNS.publish(new PublishRequest(snsTopicArn, jsonObject.toString()));
+
+        logger.info("SNS message published: " + publishResult.toString());
         return ResponseEntity.noContent().build();
     }
 
@@ -232,6 +276,23 @@ public class AnswerResource {
         long end = System.currentTimeMillis();
         long result = end-start;
         statsDClient.recordExecutionTime("timer.answer.put",result);
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("from", "noreply@"+webappDomain);
+        jsonObject.put("to", "kamat1.aditya@gmail.com");
+        jsonObject.put("QuestionID",question_id);
+        jsonObject.put("AnswerID",answer_id);
+        jsonObject.put("AnswerText",answer.getAnswer_text());
+        jsonObject.put("Message", "The answer has been updated to this specific question ID");
+        jsonObject.put("AnswerLink","https://" + webappDomain + "/v1/question/" +question_id+"/answer/"+ answer.getAnswer_id() );
+        logger.info("JSON string created: " + jsonObject.toString());
+        logger.info("Publishing the message to SNS...");
+
+        PublishResult publishResult = amazonSNS.publish(new PublishRequest(snsTopicArn, jsonObject.toString()));
+
+        logger.info("SNS message published: " + publishResult.toString());
+
+
         return ResponseEntity.noContent().build();
     }
 
@@ -430,6 +491,13 @@ public class AnswerResource {
         statsDClient.recordExecutionTime("timer.answer.file.delete",result);
         return ResponseEntity.noContent().build();
     }
+
+
+
+    private String constructRecipeURL(String recipeId) {
+        return ("https://" + webappDomain + "/v1/recipe/" + recipeId);
+    }
+
 
 
 
