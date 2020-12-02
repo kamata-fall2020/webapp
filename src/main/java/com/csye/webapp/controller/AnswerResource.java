@@ -205,6 +205,7 @@ public class AnswerResource {
         jsonObject.put("to", user.get().getUsername());
         jsonObject.put("QuestionID",question_id);
         jsonObject.put("AnswerID",answer_id);
+        jsonObject.put("AnswerText","");
         jsonObject.put("Message", "The answer has been deleted to this specific question ID");
       //  jsonObject.put("AnswerLink","http://api." + webappDomain + "/v1/question/" +question_id+"/answer/"+ answer.getAnswer_id() );
         logger.info("JSON string created: " + jsonObject.toString());
