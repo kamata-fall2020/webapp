@@ -211,7 +211,7 @@ public class AnswerResource {
         jsonObject.put("userID",authenticatedUser.getUser_id());
         jsonObject.put("userName",authenticatedUser.getFirst_name()+authenticatedUser.getLast_name());
         jsonObject.put("Message", "The answer has been deleted to this specific question ID");
-      //  jsonObject.put("AnswerLink","http://api." + webappDomain + "/v1/question/" +question_id+"/answer/"+ answer.getAnswer_id() );
+        jsonObject.put("AnswerLink","Link does not exist" );
         logger.info("JSON string created: " + jsonObject.toString());
         logger.info("Publishing the message to SNS...");
 
