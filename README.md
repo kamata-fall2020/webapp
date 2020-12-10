@@ -35,4 +35,26 @@ Run the project
 8- APIs can be verified from     Postman 
 
 
+# steps for importing certificate
+Certificate can be uploaded using cli or console
+1- For console 
+1-Go to Certificate Manager
+2-Import a certificate
+3-Enter the certificate body, private key and certificate chain
+4-Certificate chain is the one which can be found in bundle
+5-Click next and submit, you must see that the status of the certificate is issued
+
+2- For cli follow the synopsis
+
+  import-certificate
+[--certificate-arn <value>]
+--certificate <value>
+--private-key <value>
+[--certificate-chain <value>]
+[--tags <value>]
+[--cli-input-json | --cli-input-yaml]
+[--generate-cli-skeleton <value>]
+ 
+
+
 
