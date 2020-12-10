@@ -119,7 +119,7 @@ public class AnswerResource {
         jsonObject.put("userID",authenticatedUser.getUser_id());
         jsonObject.put("userName",authenticatedUser.getFirst_name()+authenticatedUser.getLast_name());
         jsonObject.put("Message", "The answer has been given to this specific question ID");
-        jsonObject.put("AnswerLink","https//" + webappDomain + "/v1/question/" +question_id+"/answer/"+ answer.getAnswer_id() );
+        jsonObject.put("AnswerLink","https://" + webappDomain + "/v1/question/" +question_id+"/answer/"+ answer.getAnswer_id() );
         logger.info("JSON string created: " + jsonObject.toString());
         logger.info("Publishing the message to SNS...");
 
